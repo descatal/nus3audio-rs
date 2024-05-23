@@ -1,3 +1,5 @@
+Forked from jam1garner's [nus3audio-rs](https://github.com/jam1garner/nus3audio-rs) and added some extended functionalities.
+
 # nus3audio-rs
 ![Rust](https://github.com/jam1garner/nus3audio-rs/workflows/Rust/badge.svg)
 
@@ -37,7 +39,10 @@ OPTIONS:
             Extract nus3audio contents with their filenames to FOLDER
 
         --rebuild-id <FOLDER>               Rebuild nus3audio contents with ids from a FOLDER
-    -R, --rebuild-name <FOLDER>             Rebuild nus3audio contents with filenames from a FOLDER
+    -R, --rebuild-name <FOLDER>
+            Rebuild nus3audio contents with filenames from a FOLDER
+            If --new is supplied, a new nus3audio file will be created from the contents of the
+            FOLDER, and the Id will be inferred from the index of the file
     -r, --replace <INDEX> <NEWFILE>
     -w, --write <write>...                  Write to FILE after performing all other operations
 ```

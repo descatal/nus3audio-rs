@@ -20,7 +20,6 @@ fn extract_name<P: AsRef<Path>>(nus3: &Nus3audioFile, folder: P) {
         fs::write(path, &file.data).expect("Failed to write bytes to extract file");
         println!("{}", file.filename());
     }
-
 }
 
 fn extract_id<P: AsRef<Path>>(nus3: &Nus3audioFile, folder: P) {
@@ -70,7 +69,9 @@ struct Args {
     #[clap(long, short='i', about="Extract nus3audio contents with their ids to FOLDER", value_name="FOLDER")]
     extract_id: Vec<PathBuf>,
 
-    #[clap(long, short='R', about="Rebuild nus3audio contents with filenames from a FOLDER", value_name="FOLDER")]
+    #[clap(long, short='R', about="Rebuild nus3audio contents with filenames from a FOLDER \r
+If --new is supplied, a new nus3audio file will be created from the contents of the FOLDER, and the Id will be inferred from the index of the file",
+        value_name="FOLDER")]
     rebuild_name: Option<PathBuf>,
 
     #[clap(long, about="Rebuild nus3audio contents with ids from a FOLDER", value_name="FOLDER")]
@@ -163,15 +164,22 @@ fn main() {
                 continue
             }
             let filename = path.file_stem().unwrap().to_str().unwrap();
-            if let Some(file) = nus3_file.files.iter_mut().find(|file| file.name == filename) {
-                file.data = fs::read(path).expect("failed to read file");
+            if args._new{
+                nus3_file.files.push(AudioFile {
+                    id: nus3_file.files.len() as u32,
+                    name: filename.to_string(),
+                    data: fs::read(path).expect("Failed to read append data")
+                });
             } else {
-                println!("File '{}' not found in nus3audio file", filename);
+                if let Some(file) = nus3_file.files.iter_mut().find(|file| file.name == filename) {
+                    file.data = fs::read(path).expect("failed to read file");
+                } else {
+                    println!("File '{}' not found in nus3audio file", filename);
+                }
             }
         }
     }
-
-
+    
     if let Some(rebuild_folder) = args.rebuild_id {
         for file in std::fs::read_dir(rebuild_folder).expect("Failed to open rebuild folder") {
             let file = file.unwrap();
